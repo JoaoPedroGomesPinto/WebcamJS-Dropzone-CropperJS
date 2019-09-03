@@ -18,6 +18,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style type="text/css">
        #camera_wrapper {
@@ -202,21 +203,28 @@
                     file.previewElement.classList.add("dz-error");
                 }
             });
-
+        function blobToDataURL(blob, callback) {
+            var a = new FileReader();
+            a.onload = function (e) { callback(e.target.result); }
+            a.readAsDataURL(blob);
+        }
 
         $('#submit').click(function () {
             myDropzone.processQueue(); 
         });
 
         myDropzone.on("addedfile", function (file) {
-            var $button = $('<a href="#" class="js-open-cropper-modal" data-file-name="' + file.name + '">Crop & Upload</a>');
-            $(file.previewElement).append($button);
+            blobToDataURL(file, function (dataurl) {
+                var $button = $('<a href="#" class="js-open-cropper-modal" data-file-name="' + dataurl + '"> Editar </a>');
+                $(file.previewElement).append($button);
+            })
         });
+
         
 
         $('#myDropzone').on('click', '.js-open-cropper-modal', function (e) {
             e.preventDefault();
-            var fileName = $(this).data('file-name-data');
+            var fileName = $(this).data('file-name');
             console.log(fileName);
             var modalTemplate =
                 '<div class="modal fade" tabindex="-1" role="dialog">' +
@@ -307,8 +315,8 @@
         if (screen.height <= screen.width) {
             // Landscape
             Webcam.set({
-                width: 320,
-                height: 240,
+                width: 640,
+                height: 360,
                 dest_width: 1280,
                 dest_height: 720,
                 // format and quality
